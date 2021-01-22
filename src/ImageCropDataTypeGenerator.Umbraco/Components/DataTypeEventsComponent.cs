@@ -1,5 +1,6 @@
 ﻿using ImageCropDataTypeGenerator.Core.Interfaces;
 using ImageCropDataTypeGenerator.Core.Models;
+using ImageCropDataTypeGenerator.Umbraco.Configurations;
 using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -57,7 +58,7 @@ namespace ImageCropDataTypeGenerator.Umbraco.Components
                         Height = crop.Height
                     }).ToArray());
 
-            var output = _imageCropDataTypeGenerator.Generate(cropDetails, "MyTest.App");
+            var output = _imageCropDataTypeGenerator.Generate(cropDetails, ApplicationConfiguration.GeneratedClassNamespace);
         }
     }
 }
