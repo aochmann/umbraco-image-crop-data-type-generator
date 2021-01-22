@@ -18,8 +18,8 @@ namespace ImageCropDataTypeGenerator.Core
         {{~ for imageAliasDefinition in imageAliasDefinitions ~}}
         public static class {{ imageAliasDefinition.ImageCropperName }}
         {
-            {{~ for crop in Crops ~}}
-            public static class {{ imageAliasDefinition.Name }}
+            {{~ for crop in imageAliasDefinition.Crops ~}}
+            public static class {{ crop.Name }}
             {
                 public const string Alias = ""{{ crop.Value }}"";
                 public const int Width = {{ crop.Width }};
