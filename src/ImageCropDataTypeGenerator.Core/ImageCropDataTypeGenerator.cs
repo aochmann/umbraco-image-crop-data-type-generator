@@ -3,7 +3,6 @@ using ImageCropDataTypeGenerator.Core.Interfaces;
 using ImageCropDataTypeGenerator.Core.Models;
 using Scriban;
 using Scriban.Runtime;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,11 +16,17 @@ namespace ImageCropDataTypeGenerator.Core
     public static class ImageCropDefinition
     {
         {{~ for imageAliasDefinition in imageAliasDefinitions ~}}
-        public static class {{ imageAliasDefinition.Name }}
+        public static class {{ imageAliasDefinition.ImageCropperName }}
         {
-            public const string Alias = ""{{ imageAliasDefinition.Value }}"";
-            public const int Width = {{ imageAliasDefinition.Width }};
-            public const int Height = {{ imageAliasDefinition.Height }};
+            {{~ for crop in Crops ~}}
+            public static class {{ imageAliasDefinition.Name }}
+            {
+                public const string Alias = ""{{ crop.Value }}"";
+                public const int Width = {{ crop.Width }};
+                public const int Height = {{ crop.Height }};
+            }
+
+            {{~ end ~}}
         }
 
         {{~ end ~}}
@@ -30,42 +35,39 @@ namespace ImageCropDataTypeGenerator.Core
 
         private const string DefaultNamespace = "ImageCropDataTypeGenerator.Models";
 
-        public string Generate(IEnumerable<ImageCropDetails> imageCrops, string @namespace = null)
+        public string Generate(IEnumerable<ImageCropDetails> crops, string @namespace = null)
         {
             if (!@namespace.HasValue())
             {
                 @namespace = DefaultNamespace;
             }
 
-            var imageAliasDefinitions = imageCrops.Select(imageCrop => new
-            {
-                Name = imageCrop.Alias.ToPascalCase(),
-                Value = imageCrop.Alias,
-                imageCrop.Width,
-                imageCrop.Height
-            }).ToArray();
+            var imageCropperDefinitions = crops
+                .GroupBy(x => x.ImageCropperName)
+                .Select(x => new
+                {
+                    ImageCropperName = x.Key.ToPascalCase(),
+                    Crops = x.Select(y => new
+                    {
+                        Name = y.Alias.ToPascalCase(),
+                        Value = y.Alias,
+                        y.Width,
+                        y.Height
+                    }).ToArray()
+                }).ToArray();
 
             var context = new TemplateContext { MemberRenamer = member => member.Name };
 
             var scriptObject = new ScriptObject
             {
-                ["imageAliasDefinitions"] = imageAliasDefinitions,
+                ["imageAliasDefinitions"] = imageCropperDefinitions,
                 ["namespace"] = @namespace
             };
 
             context.PushGlobal(scriptObject);
 
             var template = Template.Parse(ClassTemplate);
-            var result = string.Empty;
-            try
-            {
-                result = template.Render(context);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var result = template.Render(context);
 
             return result;
         }
