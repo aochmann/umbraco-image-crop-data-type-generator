@@ -12,7 +12,7 @@ using Umbraco.Core.Services.Implement;
 
 namespace ImageCropDataTypeGenerator.Umbraco.Components
 {
-    public class DataTypeEventsComponent : IComponent
+    internal class DataTypeEventsComponent : IComponent
     {
         private readonly IImageCropDataTypeGenerator _imageCropDataTypeGenerator;
         private readonly IDataTypeService _dataTypeService;

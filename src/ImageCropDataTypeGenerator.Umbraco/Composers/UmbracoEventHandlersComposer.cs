@@ -4,7 +4,7 @@ using Umbraco.Core.Composing;
 
 namespace ImageCropDataTypeGenerator.Umbraco.Composers
 {
-    public class UmbracoEventHandlersComposer : IUserComposer
+    internal class UmbracoEventHandlersComposer : IUserComposer
     {
         public void Compose(Composition composition)
             => composition.Components()
