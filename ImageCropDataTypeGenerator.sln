@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageCropDataTypeGenerator.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{78C732A4-1DD8-445A-89B7-070D09017BFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageCropDataTypeGenerator.Umbraco", "src\ImageCropDataTypeGenerator.Umbraco\ImageCropDataTypeGenerator.Umbraco.csproj", "{57C2D54C-C4BD-45E6-B379-8FC0F2B9A62B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +19,17 @@ Global
 		{B09A3288-1E9D-4F46-B9B6-ECD8B6188084}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B09A3288-1E9D-4F46-B9B6-ECD8B6188084}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B09A3288-1E9D-4F46-B9B6-ECD8B6188084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57C2D54C-C4BD-45E6-B379-8FC0F2B9A62B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57C2D54C-C4BD-45E6-B379-8FC0F2B9A62B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57C2D54C-C4BD-45E6-B379-8FC0F2B9A62B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57C2D54C-C4BD-45E6-B379-8FC0F2B9A62B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B09A3288-1E9D-4F46-B9B6-ECD8B6188084} = {78C732A4-1DD8-445A-89B7-070D09017BFC}
+		{57C2D54C-C4BD-45E6-B379-8FC0F2B9A62B} = {78C732A4-1DD8-445A-89B7-070D09017BFC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AE850318-C358-4B91-A841-77DF9AEA3A14}
