@@ -9,7 +9,6 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
 {
     internal class OptionsWebConfigReader
     {
-        // the master prefix for all appSetting entries
         private const string AppSettingsPrefix = "ImageCropDataTypeGenerator";
 
         public static void ConfigureOptions(Options options)
@@ -18,17 +17,14 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
                 "Enable",
                 options.Enable);
 
-            // more switches
             options.AcceptUnsafeModelsDirectory = GetSetting(
                 "AcceptUnsafeModelsDirectory",
                 options.AcceptUnsafeModelsDirectory);
 
-            // strings
             options.ModelsNamespace = GetSetting(
                 "Namespace",
                 options.ModelsNamespace);
 
-            // directory
             var directory = GetSetting("ModelsDirectory", "");
 
             if (!directory.HasValue())
@@ -48,7 +44,6 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
                     throw new ConfigurationErrorsException("Could not determine root directory.");
                 }
 
-                // GetModelsDirectory will ensure that the path is safe
                 options.ModelsDirectory = GetModelsDirectory(root, directory, options.AcceptUnsafeModelsDirectory);
             }
         }
@@ -67,9 +62,6 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
             {
                 var dir = Path.Combine(root, config.TrimStart("~/"));
 
-                // sanitize - GetFullPath will take care of any relative
-                // segments in path, eg '../../foo.tmp' - it may throw a SecurityException
-                // if the combined path reaches illegal parts of the filesystem
                 dir = Path.GetFullPath(dir);
                 root = Path.GetFullPath(root);
 
