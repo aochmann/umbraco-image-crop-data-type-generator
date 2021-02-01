@@ -27,7 +27,7 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
                 x => x.Namespace,
                 options.Namespace);
 
-            var directory = GetSetting<Options, string>(x => x.ModelsDirectory);
+            var directory = GetSetting<Options, string>(x => x.ModelsDirectory, options.ModelsDirectory);
             options.ModelsDirectory = GetModelsDirectory(directory, options.AcceptUnsafeModelsDirectory);
         }
 
