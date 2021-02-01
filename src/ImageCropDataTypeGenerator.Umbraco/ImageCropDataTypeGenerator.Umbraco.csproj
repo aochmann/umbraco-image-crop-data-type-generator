@@ -252,6 +252,7 @@
     <Compile Include="Composers\UmbracoEventHandlersComposer.cs" />
     <Compile Include="Extensions\CompositionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Helpers\ExpressionHelper.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\AppSettings.cs" />

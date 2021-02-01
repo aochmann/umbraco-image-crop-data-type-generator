@@ -1,7 +1,9 @@
 ﻿using ImageCropDataTypeGenerator.Umbraco.Extensions;
 using ImageCropDataTypeGenerator.Umbraco.Helpers;
+using System;
 using System.Configuration;
 using System.IO;
+using System.Linq.Expressions;
 using System.Web.Hosting;
 using Umbraco.Core;
 
@@ -13,19 +15,19 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
 
         public static void ConfigureOptions(Options options)
         {
-            options.Enable = GetSetting(
-                "Enable",
+            options.Enable = GetSetting<Options, bool>(
+                x => x.Enable,
                 options.Enable);
 
-            options.AcceptUnsafeModelsDirectory = GetSetting(
-                "AcceptUnsafeModelsDirectory",
+            options.AcceptUnsafeModelsDirectory = GetSetting<Options, bool>(
+                x => x.AcceptUnsafeModelsDirectory,
                 options.AcceptUnsafeModelsDirectory);
 
-            options.ModelsNamespace = GetSetting(
-                "Namespace",
+            options.ModelsNamespace = GetSetting<Options, string>(
+                x => x.Enable,
                 options.ModelsNamespace);
 
-            var directory = GetSetting("ModelsDirectory", "");
+            var directory = GetSetting<Options, string>(x => x.ModelsDirectory, "");
 
             if (!directory.HasValue())
             {
@@ -48,8 +50,8 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
             }
         }
 
-        private static TReturnType GetSetting<TReturnType>(string name, TReturnType defaultValue = default)
-            => AppSettings.Get<TReturnType>($"{AppSettingsPrefix}.{name}", defaultValue);
+        private static TReturnType GetSetting<TModel, TReturnType>(Expression<Func<TModel, object>> selector, TReturnType defaultValue = default)
+            => AppSettings.Get($"{AppSettingsPrefix}.{ExpressionHelper.GetNameFromMemberExpression(selector.Body)}", defaultValue);
 
         internal static string GetModelsDirectory(string root, string config, bool acceptUnsafe)
         {
