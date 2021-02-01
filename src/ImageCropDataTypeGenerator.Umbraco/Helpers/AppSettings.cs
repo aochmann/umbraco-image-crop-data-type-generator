@@ -6,9 +6,9 @@ namespace ImageCropDataTypeGenerator.Umbraco.Helpers
 {
     internal static class AppSettings
     {
-        public static T Get<T>(string key, Action<Exception> errorCallback = null)
+        public static T Get<T>(string key, T defaultValue = default, Action<Exception> errorCallback = null)
         {
-            var value = default(T);
+            var value = defaultValue;
 
             var setting = ConfigurationManager.AppSettings[key];
 
