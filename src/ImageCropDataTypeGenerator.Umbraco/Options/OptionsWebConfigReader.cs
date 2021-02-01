@@ -23,64 +23,57 @@ namespace ImageCropDataTypeGenerator.Umbraco.Options
                 x => x.AcceptUnsafeModelsDirectory,
                 options.AcceptUnsafeModelsDirectory);
 
-            options.ModelsNamespace = GetSetting<Options, string>(
-                x => x.Enable,
-                options.ModelsNamespace);
+            options.Namespace = GetSetting<Options, string>(
+                x => x.Namespace,
+                options.Namespace);
 
-            var directory = GetSetting<Options, string>(x => x.ModelsDirectory, "");
-
-            if (!directory.HasValue())
-            {
-                options.ModelsDirectory = HostingEnvironment.IsHosted
-                    ? HostingEnvironment.MapPath(options.ModelsDirectory)
-                    : options.ModelsDirectory.TrimStart("~/");
-            }
-            else
-            {
-                var root = HostingEnvironment.IsHosted
-                    ? HostingEnvironment.MapPath("~/")
-                    : Directory.GetCurrentDirectory();
-
-                if (!root.HasValue())
-                {
-                    throw new ConfigurationErrorsException("Could not determine root directory.");
-                }
-
-                options.ModelsDirectory = GetModelsDirectory(root, directory, options.AcceptUnsafeModelsDirectory);
-            }
+            var directory = GetSetting<Options, string>(x => x.ModelsDirectory);
+            options.ModelsDirectory = GetModelsDirectory(directory, options.AcceptUnsafeModelsDirectory);
         }
 
-        private static TReturnType GetSetting<TModel, TReturnType>(Expression<Func<TModel, object>> selector, TReturnType defaultValue = default)
-            => AppSettings.Get($"{AppSettingsPrefix}.{ExpressionHelper.GetNameFromMemberExpression(selector.Body)}", defaultValue);
+        private static TReturnType GetSetting<TModel, TReturnType>(Expression<Func<TModel, object>> selector,
+            TReturnType defaultValue = default)
+            => AppSettings.Get($"{AppSettingsPrefix}.{ExpressionHelper.GetNameFromMemberExpression(selector.Body)}",
+                defaultValue);
 
-        internal static string GetModelsDirectory(string root, string config, bool acceptUnsafe)
+        internal static string GetModelsDirectory(string config, bool acceptUnsafe)
         {
+            if (!config.HasValue())
+            {
+                return HostingEnvironment.IsHosted
+                    ? HostingEnvironment.MapPath(config)
+                    : config.TrimStart("~/");
+            }
+
+            var root = HostingEnvironment.IsHosted
+                ? HostingEnvironment.MapPath("~/")
+                : Directory.GetCurrentDirectory();
+
+            if (!root.HasValue())
+            {
+                throw new ConfigurationErrorsException("Could not determine root directory.");
+            }
+
             if (!Path.IsPathRooted(root))
             {
                 throw new ConfigurationErrorsException($"Root is not rooted \"{root}\".");
             }
 
-            if (config.StartsWith("~/"))
+            if (!config.StartsWith("~/"))
             {
-                var dir = Path.Combine(root, config.TrimStart("~/"));
-
-                dir = Path.GetFullPath(dir);
-                root = Path.GetFullPath(root);
-
-                if (!dir.StartsWith(root) && !acceptUnsafe)
-                {
-                    throw new ConfigurationErrorsException($"Invalid models directory \"{config}\".");
-                }
-
-                return dir;
+                return acceptUnsafe
+                    ? Path.GetFullPath(config)
+                    : throw new ConfigurationErrorsException($"Invalid models directory \"{config}\".");
             }
 
-            if (acceptUnsafe)
-            {
-                return Path.GetFullPath(config);
-            }
+            var dir = Path.Combine(root, config.TrimStart("~/"));
 
-            throw new ConfigurationErrorsException($"Invalid models directory \"{config}\".");
+            dir = Path.GetFullPath(dir);
+            root = Path.GetFullPath(root);
+
+            return dir.StartsWith(root) || acceptUnsafe
+                ? dir
+                : throw new ConfigurationErrorsException($"Invalid models directory \"{config}\".");
         }
     }
 }

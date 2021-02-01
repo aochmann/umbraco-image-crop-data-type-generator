@@ -79,7 +79,7 @@ namespace ImageCropDataTypeGenerator.Umbraco.Components
                         Height = crop.Height
                     }).ToArray());
 
-            var classDefinitionCode = _imageCropDataTypeGenerator.Generate(cropDetails, _options.ModelsNamespace);
+            var classDefinitionCode = _imageCropDataTypeGenerator.Generate(cropDetails, _options.Namespace);
 
             SaveFileClassOutput(classDefinitionCode, _options.ModelsDirectory);
         }
