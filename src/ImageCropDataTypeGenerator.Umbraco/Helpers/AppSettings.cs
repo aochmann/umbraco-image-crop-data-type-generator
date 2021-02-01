@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Profiling.Internal;
+using System;
 using System.ComponentModel;
 using System.Configuration;
 
@@ -12,7 +13,7 @@ namespace ImageCropDataTypeGenerator.Umbraco.Helpers
 
             var setting = ConfigurationManager.AppSettings[key];
 
-            if (string.IsNullOrWhiteSpace(setting))
+            if (!setting.HasValue())
             {
                 return value;
             }
