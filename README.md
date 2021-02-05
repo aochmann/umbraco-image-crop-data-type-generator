@@ -25,3 +25,43 @@ Optional settings:
 ## Example
 
 In backoffice after (re)saving any **DataType** will (re)generate `ImageCropDefinition.generated.cs` file.
+
+## Example of generated class
+
+``` csharp
+namespace CustomNamespace.SomeExample.App
+{
+    public static class ImageCropDefinition
+    {
+        public static class ImageCropper
+        {
+            public static class SomeTest
+            {
+                public const string Alias = "someTest";
+                public const int Width = 500;
+                public const int Height = 500;
+            }
+
+            public static class SomeAnotherAlias
+            {
+                public const string Alias = "some-another-alias";
+                public const int Width = 100;
+                public const int Height = 50;
+            }
+
+        }
+
+        public static class ImageCropper2
+        {
+            public static class NewImageCropper
+            {
+                public const string Alias = "new-image-cropper";
+                public const int Width = 20;
+                public const int Height = 40;
+            }
+
+        }
+
+    }
+}
+```
