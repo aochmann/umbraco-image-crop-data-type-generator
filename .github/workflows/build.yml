@@ -1,0 +1,112 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_run:
+    workflows: [ "Changelog generator" ]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    env:
+      # Stop wasting time caching packages
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+      # Disable sending usage data to Microsoft
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+      # Solution Setup
+      CONFIG: 'Release'
+      PROJECT_NAME: ${{ github.event.repository.name }}
+      VERSION: '1.0.0'
+
+      # Release Setup
+      NUGET_VERSION: 'latest'
+      NUGET_OUTPUT: '.nuget_output'
+      BINARIES_OUTPUT: '.binaries_output'
+
+    steps:
+      - name: Checkout reference commit
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v2
+
+      - name: Checkout master
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Get version
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        run: |
+          tag_check=$(git describe --exact-match `git rev-parse HEAD` | head -1)
+          echo "VERSION=$tag_check" >> $GITHUB_ENV
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.0'
+
+      - name: Setup .NET 5.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Setup .NET 6.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Configure NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: ${{ env.NUGET_VERSION }}
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: |
+          dotnet build \
+            -c ${{ env.CONFIG }} \
+            --no-restore
+
+      - name: Publish
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          dotnet publish \
+            -o ${{ env.BINARIES_OUTPUT }} \
+            -c ${{ env.CONFIG }} \
+            -f net5.0 \
+            --no-restore
+
+      - name: Create NuGet package file
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          dotnet pack \
+            -c Release \
+            --include-symbols \
+            --no-restore \
+            -o ${{ env.NUGET_OUTPUT }} \
+            /p:Version=${{ env.VERSION }} \
+            /p:AssemblyVersion=${{ env.VERSION }}
+
+      - name: Upload NuGet artifact
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: nuget_${{ env.PROJECT_NAME }}.${{ env.VERSION }}
+          path: ${{ github.workspace }}/${{ env.NUGET_OUTPUT }}/**/*
+
+      - name: Upload Build artifact
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: build_${{ env.PROJECT_NAME }}.${{ env.VERSION }}
+          path: ${{ github.workspace }}/${{ env.BINARIES_OUTPUT }}/**/*
